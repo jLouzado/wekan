@@ -111,6 +111,7 @@ Boards.attachSchema(new SimpleSchema({
           userId: this.userId,
           isAdmin: true,
           isActive: true,
+          isCommentOnly: false,
         }];
       }
     },
@@ -122,6 +123,9 @@ Boards.attachSchema(new SimpleSchema({
     type: Boolean,
   },
   'members.$.isActive': {
+    type: Boolean,
+  },
+  'members.$.isCommentOnly': {
     type: Boolean,
   },
   permission: {
@@ -223,6 +227,10 @@ Boards.helpers({
     return !!_.findWhere(this.members, {userId: memberId, isActive: true, isAdmin: true});
   },
 
+  hasCommentOnly(memberId) {
+    return !!_.findWhere(this.members, {userId: memberId, isActive: true, isAdmin: false, isCommentOnly: true});
+  },
+
   absoluteUrl() {
     return FlowRouter.url('board', { id: this._id, slug: this.slug });
   },
@@ -314,6 +322,7 @@ Boards.mutations({
           userId: memberId,
           isAdmin: false,
           isActive: true,
+          isCommentOnly: false,
         },
       },
     };
@@ -340,7 +349,7 @@ Boards.mutations({
     };
   },
 
-  setMemberPermission(memberId, isAdmin) {
+  setMemberPermission(memberId, isAdmin, isCommentOnly) {
     const memberIndex = this.memberIndex(memberId);
 
     // do not allow change permission of self
@@ -351,6 +360,7 @@ Boards.mutations({
     return {
       $set: {
         [`members.${memberIndex}.isAdmin`]: isAdmin,
+        [`members.${memberIndex}.isCommentOnly`]: isCommentOnly,
       },
     };
   },
