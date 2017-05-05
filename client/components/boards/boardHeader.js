@@ -15,17 +15,17 @@ Template.boardMenuPopup.events({
   }),
 });
 
-Template.boardMenuPopup.helpers({
-  exportUrl() {
-    const boardId = Session.get('currentBoard');
-    const loginToken = Accounts._storedLoginToken();
-    return FlowRouter.url(`api/boards/${boardId}?authToken=${loginToken}`);
-  },
-  exportFilename() {
-    const boardId = Session.get('currentBoard');
-    return `wekan-export-board-${boardId}.json`;
-  },
-});
+// Template.boardMenuPopup.helpers({
+//  exportUrl() {
+//    const boardId = Session.get('currentBoard');
+//    const loginToken = Accounts._storedLoginToken();
+//    return FlowRouter.url(`api/boards/${boardId}?authToken=${loginToken}`);
+//  },
+//  exportFilename() {
+//    const boardId = Session.get('currentBoard');
+//    return `wekan-export-board-${boardId}.json`;
+//  },
+// });
 
 Template.boardChangeTitlePopup.events({
   submit(evt, tpl) {
@@ -96,6 +96,12 @@ BlazeComponent.extendComponent({
     }];
   },
 }).register('boardHeaderBar');
+
+Template.boardHeaderBar.helpers({
+  canModifyBoard() {
+    return Meteor.user() && Meteor.user().isBoardMember() && !Meteor.user().isCommentOnly();
+  },
+});
 
 BlazeComponent.extendComponent({
   backgroundColors() {
